@@ -4,11 +4,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var passport = require('passport');
+//var authenticate = require('./authenticate');
+//var config = require('./config');
 
+var indexRouter = require('./routes/index');
+var teacherRouter = require('./routes/teacher');
+var studentRouter = require('./routes/student');
 
 //DATABASE CONNECTION START
 const mongoose = require('mongoose');
-const url = 'mongodb://localhoasr:27017/conFusion';
+const url = 'mongodb://localhost:27017/thementor';
 const connect = mongoose.connect(url);
 
 connect.then((db) => {
@@ -18,13 +24,6 @@ connect.then((db) => {
   console.log(err);
 });
 //DATABASE CONNECTION END
-
-
-//ROUTERS START
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-//ROUTERS END
-
 
 //SERVER SETUP START
 var app = express();
@@ -36,9 +35,12 @@ app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+
 //ROUTING START
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/teachers',  teacherRouter);
+app.use('/students',  studentRouter);
 //ROUTING END
 
 //SERVER SETUP END

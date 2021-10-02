@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const student = require('./student');
-const teacher = require('./teacher');
 
 const meetingSchema = new Schema({
     attendence: {
@@ -19,8 +18,14 @@ const meetingSchema = new Schema({
 })
 
 const mentoringSchema = new Schema({
-    mentor: teacher,
-    mentees: [student],
+    mentor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Teacher'
+    },
+    mentees: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+    }],
     from: {
         type: Date,
         required: true
@@ -31,6 +36,6 @@ const mentoringSchema = new Schema({
     meetings: [meetingSchema]
 });
 
-var Student = mongoose.model('Student', studentSchema);
+var Mentoring = mongoose.model('Mentoring', mentoringSchema);
 
-module.exports = Student;
+module.exports = Mentoring;

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var passportLocalMongoose = require('passport-local-mongoose');
 
 const internshipSchema = new Schema({
     companyName: {
@@ -82,15 +83,11 @@ const disciplinarySchema = new Schema({
 });
 
 const studentSchema = new Schema({
-    enroll: {
-        type: String,
-        required: true
-    },
     name: {
         type: String,
         required: true
     },
-    course: {
+    degree: {
         type: String,
         required: true
     },
@@ -121,6 +118,8 @@ const studentSchema = new Schema({
 },{
     timestamps: true
 });
+
+studentSchema.plugin(passportLocalMongoose);
 
 var Student = mongoose.model('Student', studentSchema);
 

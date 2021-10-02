@@ -4,7 +4,10 @@ const courses = require('./course');
 const student = require('./student');
 
 const subjectSchema = new Schema({
-    course: courses,
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Courses'
+    },
     isTheory: {
         type: Boolean,
         required: true
@@ -40,7 +43,10 @@ const subjectSchema = new Schema({
 });
 
 const resultSchema = new Schema({
-    enroll: student,
+    enroll: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+    },
     cgpa: {
         type: Number,
         required: true
@@ -67,3 +73,7 @@ const resultSchema = new Schema({
 },{
     timestamps: true
 });
+
+var Result = mongoose.model('Result', resultSchema);
+
+module.exports = Result;
