@@ -5,8 +5,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
-//var authenticate = require('./authenticate');
-//var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var teacherRouter = require('./routes/teacher');
