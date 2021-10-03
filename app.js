@@ -9,6 +9,7 @@ var passport = require('passport');
 var indexRouter = require('./routes/index');
 var teacherRouter = require('./routes/teacher');
 var studentRouter = require('./routes/student');
+var courseRouter = require('./routes/course');
 
 //DATABASE CONNECTION START
 const mongoose = require('mongoose');
@@ -39,6 +40,7 @@ app.use(passport.initialize());
 app.use('/', indexRouter);
 app.use('/teachers',  teacherRouter);
 app.use('/students',  studentRouter);
+app.use('/courses',  courseRouter);
 //ROUTING END
 
 //SERVER SETUP END
