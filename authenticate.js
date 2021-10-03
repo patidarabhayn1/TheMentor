@@ -1,13 +1,15 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Teacher = require('./models/teacher');
+var Student = require('./models/student');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
 
 var config = require('./config');
 
-exports.local = passport.use(new LocalStrategy(Teacher.authenticate()));
+exports.local = passport.use('teacherLocal',  new LocalStrategy(Teacher.authenticate()));
+exports.local = passport.use('studentLocal',  new LocalStrategy(Student.authenticate()));
 passport.serializeUser(Teacher.serializeUser());
 passport.deserializeUser(Teacher.deserializeUser());
 

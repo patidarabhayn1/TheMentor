@@ -2,13 +2,11 @@ var express = require('express');
 const Teacher = require('../models/teacher');
 const bodyParser = require('body-parser')
 var passport = require('passport');
-const authenticate = require('../authenticateTeacher');
-
+const authenticate = require('../authenticate');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
-/* GET users listing. */
 router.get('/', authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
   Teacher.find({})
   .then((teachers) => {
@@ -23,7 +21,7 @@ router.get('/', authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res,
 
 router.post('/signup', (req, res, next) => {
   newTeacher = new Teacher({
-    username: req.body.staffId,
+    username: req.body.username,
     name: req.body.name,
     joiningDate: req.body.joiningDate,
     email: req.body.email
@@ -36,28 +34,18 @@ router.post('/signup', (req, res, next) => {
     }
     else {
       console.log(teacher);
-      next();
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, status: 'Teacher Registration Successful!'});
     }
   })
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', passport.authenticate('teacherLocal'), (req, res) => {
   var token = authenticate.getToken({_id: req.user._id});
-  res.statusCode = 500;
+  res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
-  res.json({success: true, token: token, status: 'Login Successful!'});
+  res.json({success: true, token: token, status: 'Teacher Login Successful!'});
 });
 
-router.get('/logout', (req, res, next) => {
-  if(req.session) {
-    req.session.destroy();
-    res.clearCookie('session-id');
-    res.redirect('/');
-  }
-  else {
-    var err = new Error('Not Logged In!');
-    err.status = 403;
-    next(err);
-  }
-})
 module.exports = router;
