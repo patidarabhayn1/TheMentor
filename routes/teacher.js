@@ -41,6 +41,29 @@ router.post('/signup', (req, res, next) => {
   })
 });
 
+router.post('/signup/admin', authenticate.verifyTeacher , authenticate.verifyAdmin, (req, res, next) => {
+  newTeacher = new Teacher({
+    username: req.body.username,
+    name: req.body.name,
+    joiningDate: req.body.joiningDate,
+    email: req.body.email,
+    isAdmin: true
+  });
+  Teacher.register(newTeacher, req.body.password, (err, teacher) => {
+    if(err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({err: err});
+    }
+    else {
+      console.log(teacher);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, status: 'Teacher Registration Successful!'});
+    }
+  })
+});
+
 router.post('/login', passport.authenticate('teacherLocal'), (req, res) => {
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
