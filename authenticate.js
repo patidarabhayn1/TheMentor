@@ -21,7 +21,7 @@ var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = config.secretKey;
 
-exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
+exports.jwtPassport = passport.use('teacherJWT', new JwtStrategy(opts, (jwt_payload, done) => {
     console.log("JWT Payload: ", jwt_payload);
     Teacher.findOne({_id: jwt_payload._id}, (err, teacher) => {
         if(err) {
@@ -36,7 +36,24 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => 
     });
 }))
 
-exports.verifyTeacher = passport.authenticate('jwt', {session: false});
+exports.jwtPassport = passport.use('studentJWT', new JwtStrategy(opts, (jwt_payload, done) => {
+    console.log("JWT Payload: ", jwt_payload);
+    Student.findOne({_id: jwt_payload._id}, (err, student) => {
+        if(err) {
+            return done(err, false);
+        }
+        else if(student){
+            return done(null, student);
+        }
+        else {
+            return done(null, false);
+        }
+    });
+}))
+
+exports.verifyStudent = passport.authenticate('studentJWT', {session: false});
+exports.verifyTeacher = passport.authenticate('teacherJWT', {session: false});
+
 exports.verifyAdmin = function(req, res, next) {
     if(!req.user.isAdmin) {
         var err = new Error("You are not authorized to perform this operation");
