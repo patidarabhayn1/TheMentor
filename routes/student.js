@@ -7,9 +7,17 @@ var authenticate = require('../authenticate');
 var router = express.Router();
 router.use(bodyParser.json());
 
-router.get('/',  (req, res, next) => {
-  res.statusCode = 403;
-  res.end('GET operation NOT supported on /students');
+router.route('/profile')
+.get(authenticate.verifyStudent, (req, res, next) => {
+  Student.findById(req.user._id)
+  .then((student) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(student);
+  }, (err) => next(err))
+  .catch((err) => {
+    next(err);
+  })
 });
 
 router.post('/signup', (req, res, next) => {

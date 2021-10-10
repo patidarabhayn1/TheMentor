@@ -7,6 +7,16 @@ const authenticate = require('../authenticate');
 var router = express.Router();
 router.use(bodyParser.json());
 
+router.route('/profile')
+.get(authenticate.verifyTeacher, (req, res, next) => {
+  Teacher.findById(req.user._id)
+  .then((teacher) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(teacher);
+  })
+});
+
 router.get('/', authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
   Teacher.find({})
   .then((teachers) => {
