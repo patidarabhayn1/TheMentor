@@ -22,16 +22,20 @@ const mentoringSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teacher'
     },
-    mentees: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
-    }],
     from: {
         type: Date,
         required: true
     },
     To: {
         type: Date
+    },
+    branch: {
+        type: String,
+        required: true
+    },
+    year: {
+        type: Number,
+        required: true
     },
     meetings: [meetingSchema]
 });
