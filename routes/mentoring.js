@@ -147,6 +147,11 @@ router.route('/:batchId/meetings')
                 res.json(batch.meetings);
             }
         }
+        else {
+            var err = new Error('Batch does not exist');
+            err.status= 403;
+            return next(err);
+        }
     }, (err) => next(err))
     .catch((err) => {
         next(err);
@@ -174,6 +179,11 @@ router.route('/:batchId/meetings')
                     })
                 })
             }
+        }
+        else {
+            var err = new Error('Batch does not exist');
+            err.status= 403;
+            return next(err);
         }
     }, (err) => next(err))
     .catch((err) => {
