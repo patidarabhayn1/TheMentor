@@ -131,6 +131,96 @@ router.route('/:batchId')
     })
 });
 
+router.route('/:batchId/meetings')
+.get(authenticate.verifyTeacher, (req, res, next) => {
+    Mentoring.findById(req.params.batchId)
+    .then((batch) => {
+        if(batch != null) {
+            if(!batch.mentor.equals(req.user._id)) {
+                var err = new Error('You are not authorised to update this batch');
+                err.status= 403;
+                return next(err);
+            }
+            else {      
+                res.statusCode = 200;
+                res.setHeader('Content-Type','application/json');
+                res.json(batch.meetings);
+            }
+        }
+    }, (err) => next(err))
+    .catch((err) => {
+        next(err);
+    })
+})
+
+.post(authenticate.verifyTeacher, (req, res, next) => {
+    Mentoring.findById(req.params.batchId)
+    .then((batch) => {
+        if(batch != null) {
+            if(!batch.mentor.equals(req.user._id)) {
+                var err = new Error('You are not authorised to update this batch');
+                err.status= 403;
+                return next(err);
+            }
+            else {      
+                batch.meetings.push(req.body)
+                batch.save()
+                .then((batch) => {
+                    Mentoring.findById(req.params.batchId)
+                    .then((batch) => {
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type','application/json');
+                        res.json(batch.meetings);
+                    })
+                })
+            }
+        }
+    }, (err) => next(err))
+    .catch((err) => {
+        next(err);
+    })
+})
+
+.put(authenticate.verifyTeacher, (req, res, next) => {
+    res.statusCode = 403;
+    res.end('PUT operation NOT supported on /mentoring/' + req.params.batchId + '/meetings');
+})
+
+.delete(authenticate.verifyTeacher, (req, res, next) => {
+    res.statusCode = 403;
+    res.end('DELETE operation NOT supported on /mentoring/' + req.params.batchId + '/students');
+});
+
+router.route('/:batchId/meetings/:meetingId')
+.delete(authenticate.verifyTeacher, (req, res, next) => {
+    Mentoring.findById(req.params.batchId)
+    .then((batch) => {
+        if(batch != null) {
+            if(!batch.mentor.equals(req.user._id)) {
+                var err = new Error('You are not authorised to update this batch');
+                err.status= 403;
+                return next(err);
+            }
+            else {           
+                batch.meetings.id(req.params.meetingId).remove()
+                batch.save()
+                .then((batch) => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type','application/json');
+                    res.json(batch.meetings);
+                }, (err) => next(err))
+            }
+        }
+        else {
+            var err = new Error('Batch does not exist');
+            err.status= 403;
+            return next(err);
+        }
+    }, (err) => next(err))
+    .catch((err) => {
+        next(err);
+    })
+});
 
 //STUDENTS IN SPECIFIC BATCHES
 router.route('/:batchId/students')
