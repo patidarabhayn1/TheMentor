@@ -64,7 +64,7 @@ const majorAbsenceSchema = new Schema({
 });
 
 const disciplinarySchema = new Schema({
-    activiity: {
+    activity: {
         type: String,
         required: true
     },

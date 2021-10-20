@@ -236,8 +236,6 @@ router.route('/:batchId/meetings/:meetingId')
 router.route('/:batchId/students')
 .get(authenticate.verifyTeacher, (req, res, next) => {
     StudentBatch.find({batch: req.params.batchId})
-    .populate('mentee')
-    .populate('batch')
     .then((students) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');

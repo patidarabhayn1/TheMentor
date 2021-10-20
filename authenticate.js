@@ -2,6 +2,8 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Teacher = require('./models/teacher');
 var Student = require('./models/student');
+var StudentBatch = require('./models/studentBatch');
+var Mentoring = require('./models/mentoringRecord');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
@@ -63,4 +65,48 @@ exports.verifyAdmin = function(req, res, next) {
     else {
         next();
     }
+}
+
+exports.verifyMentor = function(req, res, next) {
+    Student.findById(req.params.studentId)
+    .then((student) => {
+        if(student != null) {
+            StudentBatch.find({mentee: student._id})
+            .then((record) => {
+                if(record.length > 0){
+                Mentoring.findById(record[0].batch)
+                .then((batch) => {
+                    if(batch != null) {
+                        if(!batch.mentor.equals(req.user._id)){
+                            var err = new Error('You are not authorised to update this student');
+                            err.status= 403;
+                            return next(err);
+                        }
+                        else{    
+                            next();
+                        }
+                    }
+                    else {
+                    var err = new Error('Mentor Not Exist');
+                    err.status= 403;
+                    return next(err);
+                    }
+                })
+                }
+                else {
+                var err = new Error('No Mentor Record for this Student');
+                err.status= 403;
+                return next(err);
+                }
+            })
+        }
+        else {
+            var err = new Error('Student does not exist');
+            err.status= 403;
+            return next(err);
+        }
+    })
+    .catch((err) => {
+        next(err);
+    })
 }
