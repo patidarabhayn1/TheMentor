@@ -14,7 +14,7 @@ passport.serializeUser(Teacher.serializeUser());
 passport.deserializeUser(Teacher.deserializeUser());
 
 exports.getToken = function(teacher) {
-    return jwt.sign(teacher, config.secretKey, {expiresIn: 3600});
+    return jwt.sign(teacher, config.secretKey, {expiresIn: 2678400});
 };
 
 var opts = {};

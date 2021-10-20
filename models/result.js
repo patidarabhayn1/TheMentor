@@ -6,7 +6,8 @@ const student = require('./student');
 const subjectSchema = new Schema({
     course: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Courses'
+        ref: 'Courses',
+        required: true
     },
     isTheory: {
         type: Boolean,
@@ -18,17 +19,19 @@ const subjectSchema = new Schema({
     },
     mst1: {
         type: Number,
-        required: true
+        default: -1
     },
     mst2: {
         type: Number,
-        required: true
+        default: -1
     },
     endSemT: {
-        type: String
+        type: String,
+        default: -1
     },
     endSemP: {
-        type: String
+        type: String,
+        default: -1
     },
     credits: {
         type: Number,
@@ -36,24 +39,27 @@ const subjectSchema = new Schema({
     },
     attendenceT: {
         type: Number,
+        default: -1
     },
     attendenceP: {
         type: Number,
+        default: -1
     },
 });
 
 const resultSchema = new Schema({
     enroll: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
+        ref: 'Student',
+        required: true
     },
     cgpa: {
         type: Number,
-        required: true
+        default: -1
     },
     sgpa: {
         type: Number,
-        required: true
+        default: -1
     },
     sem: {
         type: Number,
@@ -66,8 +72,7 @@ const resultSchema = new Schema({
         required: true
     },
     creditsEarned: {
-        type: Number,
-        required: true
+        type: Number
     },
     subjects: [subjectSchema]
 },{

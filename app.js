@@ -11,6 +11,7 @@ var teacherRouter = require('./routes/teacher');
 var studentRouter = require('./routes/student');
 var courseRouter = require('./routes/course');
 var mentoringRouter = require('./routes/mentoring');
+var resultRouter = require('./routes/result');
 
 //DATABASE CONNECTION START
 const mongoose = require('mongoose');
@@ -43,6 +44,7 @@ app.use('/teachers',  teacherRouter);
 app.use('/students',  studentRouter);
 app.use('/courses',  courseRouter);
 app.use('/mentoring', mentoringRouter);
+app.use('/result',  resultRouter);
 //ROUTING END
 
 //SERVER SETUP END

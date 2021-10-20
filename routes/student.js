@@ -9,6 +9,19 @@ var authenticate = require('../authenticate');
 var router = express.Router();
 router.use(bodyParser.json());
 
+router.route('/profile')
+.get(authenticate.verifyStudent, (req, res, next) => {
+  Student.findById(req.user._id)
+  .then((student) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(student);
+  }, (err) => next(err))
+  .catch((err) => {
+    next(err);
+  })
+});
+
 router.route('/:studentId')
 .get(authenticate.verifyTeacher, (req, res, next) => {
   Student.findById(req.params.studentId)
@@ -74,20 +87,6 @@ router.route('/:studentId')
           return next(err);
       }
   })
-  .catch((err) => {
-    next(err);
-  })
-})
-
-
-router.route('/profile')
-.get(authenticate.verifyStudent, (req, res, next) => {
-  Student.findById(req.user._id)
-  .then((student) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json(student);
-  }, (err) => next(err))
   .catch((err) => {
     next(err);
   })
