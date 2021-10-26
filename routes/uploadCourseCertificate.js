@@ -9,11 +9,11 @@ const cors = require('./cors');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/InternshipCertificate');
+        cb(null, 'public/CourseCertificate');
     },
 
     filename: (req, file, cb) => {
-        cb(null, req.user.username + "Internship" + Date.now()+".pdf")
+        cb(null, req.user.username + "Course" + Date.now()+".pdf")
     }
 });
 
@@ -25,16 +25,16 @@ const FileFilter = (req, file, cb) => {
 };
 
 var options = {
-    root: path.join("./public/InternshipCertificate")
+    root: path.join("./public/CourseCertificate")
 };
 
 const upload = multer({ storage: storage, fileFilter: FileFilter});
 
-const internshipRouter = express.Router();
+const courseRouter = express.Router();
 
-internshipRouter.use(bodyParser.json());
+courseRouter.use(bodyParser.json());
 
-internshipRouter.route('/')
+courseRouter.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Student.findById(req.user._id)
@@ -42,7 +42,7 @@ internshipRouter.route('/')
         if(student != null) {
             res.statusCode = 200;
             res.setHeader('Content-Type','application/json');
-            res.json(student.internships);
+            res.json(student.courses);
         }
         else {
             var err = new Error("No student Exist");
@@ -60,7 +60,7 @@ internshipRouter.route('/')
     .then((student) => {
         if(student != null) {
             req.body.certificate = req.file.filename;
-            student.internships.push(req.body)
+            student.courses.push(req.body)
             student.save()
             .then((student) => {
                 Student.findById(req.user._id)
@@ -87,13 +87,13 @@ internshipRouter.route('/')
 });
 
 
-internshipRouter.route('/:internshipId')
+courseRouter.route('/:courseId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Student.findById(req.user._id)
     .then((student) => {
         if(student != null) {
-            var record = student.internships.id(req.params.internshipId);
+            var record = student.courses.id(req.params.courseId);
             if(record != null) {
                 var filename = record.certificate;
                 res.sendFile(filename,  options,  (err) => {
@@ -105,16 +105,6 @@ internshipRouter.route('/:internshipId')
                     }
                 })
             }
-            else {
-                var err = new Error("No Internship Record");
-                err.statusCode = 403;
-                return next(err);
-            }
-        }
-        else {
-            var err = new Error("No student Exist");
-            err.statusCode = 403;
-            return next(err);
         }
     }, (err) => next(err))
     .catch((err) => {
@@ -130,7 +120,7 @@ internshipRouter.route('/:internshipId')
     Student.findById(req.user._id)
     .then((student) => {
         if(student != null) {
-            Object.assign(student.internships.id(req.params.internshipId),req.body)
+            Object.assign(student.courses.id(req.params.courseId),req.body)
             student.save()
             .then((student) => {
                 Student.findById(req.user._id)
@@ -155,9 +145,9 @@ internshipRouter.route('/:internshipId')
     Student.findById(req.user._id)
     .then((student) => {
         if(student != null){
-            var record = student.internships.id(req.params.internshipId);
+            var record = student.courses.id(req.params.courseId);
             console.log("Deleted: ", path.resolve('./public/InternshipCertificate' + record.certificate));    
-            student.internships.id(req.params.internshipId).remove()
+            student.courses.id(req.params.courseId).remove()
             student.save()
             .then((student) => {
                 fs.unlink(path.resolve('./public/InternshipCertificate/' + record.certificate), function() {
@@ -179,4 +169,4 @@ internshipRouter.route('/:internshipId')
     })
 });
 
-module.exports = internshipRouter;
+module.exports = courseRouter;

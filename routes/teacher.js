@@ -3,12 +3,14 @@ const Teacher = require('../models/teacher');
 const bodyParser = require('body-parser')
 var passport = require('passport');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 router.route('/profile')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
   Teacher.findById(req.user._id)
   .then((teacher) => {
     res.statusCode = 200;
@@ -17,7 +19,9 @@ router.route('/profile')
   })
 });
 
-router.get('/', authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+router.route('/')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
   Teacher.find({})
   .then((teachers) => {
     res.statusCode = 200;
@@ -29,7 +33,9 @@ router.get('/', authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res,
   })
 });
 
-router.post('/signup', (req, res, next) => {
+router.route('/signup')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, (req, res, next) => {
   newTeacher = new Teacher({
     username: req.body.username,
     name: req.body.name,
@@ -51,7 +57,9 @@ router.post('/signup', (req, res, next) => {
   })
 });
 
-router.post('/signup/admin', authenticate.verifyTeacher , authenticate.verifyAdmin, (req, res, next) => {
+router.route('/signup/admin')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, authenticate.verifyTeacher , authenticate.verifyAdmin, (req, res, next) => {
   newTeacher = new Teacher({
     username: req.body.username,
     name: req.body.name,
@@ -74,7 +82,9 @@ router.post('/signup/admin', authenticate.verifyTeacher , authenticate.verifyAdm
   })
 });
 
-router.post('/login', passport.authenticate('teacherLocal'), (req, res) => {
+router.route('/login')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, passport.authenticate('teacherLocal'), (req, res) => {
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');

@@ -6,14 +6,18 @@ const bodyParser = require('body-parser')
 var passport = require('passport');
 var authenticate = require('../authenticate');
 var uploadInternshipRouter = require('./uploadInternshipCertificate');
+var uploadCourseRouter = require('./uploadCourseCertificate');
+const cors = require('./cors');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
-router.use('/internship', uploadInternshipRouter);
+router.use('/internships', uploadInternshipRouter);
+router.use('/courses', uploadCourseRouter);
 
 router.route('/profile')
-.get(authenticate.verifyStudent, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
   Student.findById(req.user._id)
   .then((student) => {
     res.statusCode = 200;
@@ -26,7 +30,8 @@ router.route('/profile')
 });
 
 router.route('/:studentId')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
   Student.findById(req.params.studentId)
   .then((student) => {
     res.statusCode = 200;
@@ -38,7 +43,7 @@ router.route('/:studentId')
   })
 })
 
-.put(authenticate.verifyTeacher, authenticate.verifyMentor, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyMentor, (req, res, next) => {
   Student.findByIdAndUpdate(req.params.studentId, {
       $set: req.body
   }, {
@@ -55,7 +60,8 @@ router.route('/:studentId')
 });
 
 router.route('/:studentId/absence')
-.post(authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
     Student.findById(req.params.studentId)
     .then((student) => {
         if(student != null){
@@ -71,7 +77,8 @@ router.route('/:studentId/absence')
 });
 
 router.route('/:studentId/absence/:absenceId')
-.delete(authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.delete(cors.corsWithOptions, authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
     Student.findById(req.params.studentId)
     .then((student) => {
         if(student != null){
@@ -87,7 +94,8 @@ router.route('/:studentId/absence/:absenceId')
 });
 
 router.route('/:studentId/activity')
-.post(authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
     Student.findById(req.params.studentId)
     .then((student) => {
         if(student != null){
@@ -103,7 +111,8 @@ router.route('/:studentId/activity')
 });
 
 router.route('/:studentId/activity/:activityId')
-.delete(authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.delete(cors.corsWithOptions, authenticate.verifyTeacher ,authenticate.verifyMentor, (req, res, next) => {
     Student.findById(req.params.studentId)
     .then((student) => {
         if(student != null){
@@ -118,7 +127,9 @@ router.route('/:studentId/activity/:activityId')
     })
 });
 
-router.post('/signup', (req, res, next) => {
+router.route('/signup')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, (req, res, next) => {
   newStudent = new Student({
     username: req.body.username,
     name: req.body.name,
@@ -142,7 +153,9 @@ router.post('/signup', (req, res, next) => {
   })
 });
 
-router.post('/login', passport.authenticate('studentLocal'), (req, res) => {
+router.route('/login')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, passport.authenticate('studentLocal'), (req, res) => {
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');

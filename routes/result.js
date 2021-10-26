@@ -4,12 +4,14 @@ const Result = require('../models/result');
 const bodyParser = require('body-parser')
 var passport = require('passport');
 var authenticate = require('../authenticate');
+const cors = require('./cors');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 router.route('/')
-.get(authenticate.verifyStudent,  (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id})
     .then((result) => {
         res.statusCode = 200;
@@ -21,7 +23,7 @@ router.route('/')
     })
 })
 
-.post(authenticate.verifyStudent, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     req.body.enroll = req.user._id
     Result.create(req.body)
     .then((result) => {
@@ -35,18 +37,19 @@ router.route('/')
     })
 })
 
-.put(authenticate.verifyStudent, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported');
 })
 
-.delete(authenticate.verifyStudent, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported');
 });
 
 router.route('/:resultId')
-.get(authenticate.verifyStudent,  (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id,  _id: req.params.resultId})
     .then((result) => {
         res.statusCode = 200;
@@ -58,12 +61,12 @@ router.route('/:resultId')
     })
 })
 
-.post(authenticate.verifyStudent, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported');
 })
 
-.put(authenticate.verifyStudent, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Result.find({enroll: req.user._id,  _id: req.params.resultId})
     .then((result) => {
         Result.findByIdAndUpdate(req.params.resultId, {
@@ -85,7 +88,7 @@ router.route('/:resultId')
     })
 })
 
-.delete(authenticate.verifyStudent, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Result.findByIdAndRemove(req.params.resultId)
     .then((response) => {
         res.statusCode = 200;
@@ -99,7 +102,8 @@ router.route('/:resultId')
 
 
 router.route('/:resultId/subjects')
-.get(authenticate.verifyStudent,  (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {
@@ -118,7 +122,7 @@ router.route('/:resultId/subjects')
     })
 })
 
-.post(authenticate.verifyStudent, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {
@@ -154,18 +158,19 @@ router.route('/:resultId/subjects')
     })
 })
 
-.put(authenticate.verifyStudent, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported');
 })
 
-.delete(authenticate.verifyStudent, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported');
 });
 
 router.route('/:resultId/subjects/:subjectId')
-.get(authenticate.verifyStudent,  (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {
@@ -184,12 +189,12 @@ router.route('/:resultId/subjects/:subjectId')
     })
 })
 
-.post(authenticate.verifyStudent, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     res.statusCode = 403;
     res.end('POSt operation NOT supported');
 })
 
-.put(authenticate.verifyStudent, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {
@@ -218,7 +223,7 @@ router.route('/:resultId/subjects/:subjectId')
     })
 })
 
-.delete(authenticate.verifyStudent, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyStudent, (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {

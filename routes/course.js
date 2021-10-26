@@ -2,12 +2,14 @@ var express = require('express');
 const Course = require('../models/course');
 const bodyParser = require('body-parser');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 var courseRouter = express.Router();
 courseRouter.use(bodyParser.json());
 
 courseRouter.route('/')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, (req, res, next) => {
   Course.findOne({})
   .then((courses) => {
       res.statusCode = 200;
@@ -19,7 +21,7 @@ courseRouter.route('/')
   })
 })
 
-.post(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
   Course.create(req.body)
   .then((course) => {
       console.log('Course Created ' + course);
@@ -32,19 +34,19 @@ courseRouter.route('/')
     })
 })
 
-.put(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported on /courses');
 })
 
-.delete(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported on /courses');
 });
 
 courseRouter.route('/:courseId')
-
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, (req, res, next) => {
     Course.findById(req.params.courseId)
     .then((course) => {
         res.statusCode = 200;
@@ -56,12 +58,12 @@ courseRouter.route('/:courseId')
     })
 })
 
-.post(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST Method Not Supported');
 })
 
-.put(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
     Course.findByIdAndUpdate(req.params.courseId, {
         $set: req.body
     }, {
@@ -77,7 +79,7 @@ courseRouter.route('/:courseId')
     })
 })
 
-.delete(authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, authenticate.verifyAdmin, (req, res, next) => {
     Course.findByIdAndRemove(req.params.courseId)
     .then((response) => {
         res.statusCode = 200;

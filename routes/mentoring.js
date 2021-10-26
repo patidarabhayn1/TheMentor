@@ -3,6 +3,7 @@ const Student = require('../models/student');
 const bodyParser = require('body-parser')
 var passport = require('passport');
 var authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const Mentoring = require('../models/mentoringRecord');
 const StudentBatch =require('../models/studentBatch');
@@ -13,7 +14,8 @@ router.use(bodyParser.json());
 
 //BATCHES GENERAL
 router.route('/')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.find({mentor: req.user._id})
     .then((batches) => {
         res.statusCode = 200;
@@ -25,7 +27,7 @@ router.route('/')
     })
 })
 
-.post(authenticate.verifyTeacher, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     req.body.mentor = req.user._id
     Mentoring.create(req.body)
     .then((batch) => {
@@ -39,12 +41,12 @@ router.route('/')
     })
 })
 
-.put(authenticate.verifyTeacher, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported on /mentoring');
 })
 
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported on /mentoring');
 });
@@ -52,7 +54,8 @@ router.route('/')
 
 //SPECIFC BATCH
 router.route('/:batchId')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         res.statusCode = 200;
@@ -64,12 +67,12 @@ router.route('/:batchId')
     })
 })
 
-.post(authenticate.verifyTeacher, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation NOT supported on /mentoring/' + req.params.batchId);
 })
 
-.put(authenticate.verifyTeacher, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         if(batch != null) {
@@ -102,7 +105,7 @@ router.route('/:batchId')
     })
 })
 
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         if(batch != null) {
@@ -132,7 +135,8 @@ router.route('/:batchId')
 });
 
 router.route('/:batchId/meetings')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         if(batch != null) {
@@ -158,7 +162,7 @@ router.route('/:batchId/meetings')
     })
 })
 
-.post(authenticate.verifyTeacher, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         if(batch != null) {
@@ -191,18 +195,19 @@ router.route('/:batchId/meetings')
     })
 })
 
-.put(authenticate.verifyTeacher, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported on /mentoring/' + req.params.batchId + '/meetings');
 })
 
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported on /mentoring/' + req.params.batchId + '/students');
 });
 
 router.route('/:batchId/meetings/:meetingId')
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
         if(batch != null) {
@@ -234,7 +239,8 @@ router.route('/:batchId/meetings/:meetingId')
 
 //STUDENTS IN SPECIFIC BATCHES
 router.route('/:batchId/students')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     StudentBatch.find({batch: req.params.batchId})
     .then((students) => {
         res.statusCode = 200;
@@ -246,7 +252,7 @@ router.route('/:batchId/students')
     })
 })
 
-.post(authenticate.verifyTeacher, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     req.body.batch = req.params.batchId;
     Mentoring.findById(req.params.batchId)
     .then((batch) => {
@@ -279,33 +285,34 @@ router.route('/:batchId/students')
     .catch((err) => next(err));
 })
 
-.put(authenticate.verifyTeacher, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported on /mentoring/' + req.params.batchId + '/students');
 })
 
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('DELETE operation NOT supported on /mentoring/' + req.params.batchId + '/students');
 });
 
 //SPECIFIC STUDENT IN SPECIFIC BATCH
 router.route('/:batchId/students/:studentId')
-.get(authenticate.verifyTeacher, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('GET operation NOT supported on /mentoring/' + req.params.batchId + '/students' + req.params.batchId);
 })
-.post(authenticate.verifyTeacher, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation NOT supported on /mentoring/' + req.params.batchId + '/students' + req.params.studentId);
 })
 
-.put(authenticate.verifyTeacher, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation NOT supported on /mentoring/' + req.params.batchId + '/students' + req.params.studentId);
 })
 
-.delete(authenticate.verifyTeacher, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     StudentBatch.findOneAndDelete({mentee: req.params.studentId})
     .then((response) => {
         res.statusCode = 200;

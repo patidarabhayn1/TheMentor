@@ -22,6 +22,10 @@ const teacherSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    isTeacher: {
+        type: Boolean,
+        default: true
     }
 },{
     timestamps: true

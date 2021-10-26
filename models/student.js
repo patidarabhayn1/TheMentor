@@ -111,8 +111,12 @@ const studentSchema = new Schema({
         type: String,
         default: ''
     },
+    isTeacher: {
+        type: Boolean,
+        default: false
+    },
     internships: [internshipSchema],
-    onlineCourses: [onlineCourseSchema],
+    courses: [onlineCourseSchema],
     majorAbsence: [majorAbsenceSchema],
     disciplinary: [disciplinarySchema]
 },{
