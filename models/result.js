@@ -11,11 +11,11 @@ const subjectSchema = new Schema({
     },
     isTheory: {
         type: Boolean,
-        required: true
+        default: false
     },
     isPractical: {
         type: Boolean,
-        required: true
+        default: false
     },
     mst1: {
         type: Number,
@@ -72,7 +72,8 @@ const resultSchema = new Schema({
         required: true
     },
     creditsEarned: {
-        type: Number
+        type: Number,
+        default: -1
     },
     subjects: [subjectSchema]
 },{

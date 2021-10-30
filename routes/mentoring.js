@@ -115,11 +115,17 @@ router.route('/:batchId')
                 return next(err);
             }
             else {           
-                Mentoring.findByIdAndRemove(req.params.batchId)
-                .then((response) => {
-                    res.statusCode = 200;
-                    res.setHeader('Content-Type','application/json');
-                    res.json(response);
+                StudentBatch.deleteMany({batch: req.params.batchId})
+                .then(() => {
+                        Mentoring.findByIdAndRemove(req.params.batchId)
+                        .then((response) => {
+                            res.statusCode = 200;
+                            res.setHeader('Content-Type','application/json');
+                            res.json(response);
+                        }, (err) => next(err))
+                        .catch((err) => {
+                            next(err);
+                        })
                 }, (err) => next(err))
                 .catch((err) => {
                     next(err);
@@ -242,6 +248,7 @@ router.route('/:batchId/students')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyTeacher, (req, res, next) => {
     StudentBatch.find({batch: req.params.batchId})
+    .populate('mentee')
     .then((students) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');
@@ -263,12 +270,26 @@ router.route('/:batchId/students')
                 return next(err);
             }
             else if(req.body.mentee != null) {
-                StudentBatch.create(req.body)
-                .then((record) => {  
-                        res.statusCode = 200;
-                        res.setHeader('Content-Type', 'application/json');
-                        res.json(record);
-                },(err) => next(err));              
+                Student.find({username: req.body.mentee})
+                .then((students) => {
+                    if(students.length > 0){
+                        console.log(students);
+                        console.log(students[0]);
+                        req.body.mentee = students[0]._id;
+                        StudentBatch.create(req.body)
+                        .then((record) => {  
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json(record);
+                        },(err) => next(err)); 
+                    }
+                    else {
+                        var err = new Error('Student Not Exist');
+                        err.status= 403;
+                        return next(err);
+                    }
+                }, (err) => next(err))
+                .catch((err) => next(err));        
             }
             else{
                 var err = new Error('Parameters Missing');

@@ -96,7 +96,8 @@ const studentSchema = new Schema({
         required: true
     },
     admissionDate: {
-        type: Date
+        type: Date,
+        required: true
     },
     email: {
         type: String,
@@ -114,6 +115,10 @@ const studentSchema = new Schema({
     isTeacher: {
         type: Boolean,
         default: false
+    },
+    phoneNumber: {
+        type: Number,
+        required: true
     },
     internships: [internshipSchema],
     courses: [onlineCourseSchema],

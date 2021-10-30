@@ -146,11 +146,11 @@ courseRouter.route('/:courseId')
     .then((student) => {
         if(student != null){
             var record = student.courses.id(req.params.courseId);
-            console.log("Deleted: ", path.resolve('./public/InternshipCertificate' + record.certificate));    
+            console.log("Deleted: ", path.resolve('./public/CourseCertificate' + record.certificate));    
             student.courses.id(req.params.courseId).remove()
             student.save()
             .then((student) => {
-                fs.unlink(path.resolve('./public/InternshipCertificate/' + record.certificate), function() {
+                fs.unlink(path.resolve('./public/CourseCertificate/' + record.certificate), function() {
                     res.send ({
                         status: "200",
                         responseType: "string",

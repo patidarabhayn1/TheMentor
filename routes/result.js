@@ -1,6 +1,7 @@
 var express = require('express');
 const Student = require('../models/student');
 const Result = require('../models/result');
+const Course = require('../models/course');
 const bodyParser = require('body-parser')
 var passport = require('passport');
 var authenticate = require('../authenticate');
@@ -13,6 +14,7 @@ router.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id})
+    .populate('subjects.course')
     .then((result) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');
@@ -51,6 +53,7 @@ router.route('/:resultId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id,  _id: req.params.resultId})
+    .populate('subjects.course')
     .then((result) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');
@@ -105,6 +108,7 @@ router.route('/:resultId/subjects')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
+    .populate('subjects.course')
     .then((result) => {
         if(result.length > 0) {
             res.statusCode = 200;
@@ -126,6 +130,12 @@ router.route('/:resultId/subjects')
     Result.find({enroll: req.user._id, _id: req.params.resultId})
     .then((result) => {
         if(result.length > 0) {
+            Course.find({courseCode: req.body.course})
+            .then((courses) => {
+                if(courses.length > 0){
+                    req.body.course = courses[0]._id;
+                }
+            }, (err) => next(err))
             Result.findById(req.params.resultId)
             .then((result) => {
                 if(result != null) {
@@ -172,6 +182,7 @@ router.route('/:resultId/subjects/:subjectId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
     Result.find({enroll: req.user._id, _id: req.params.resultId})
+    .populate('subjects.course')
     .then((result) => {
         if(result.length > 0) {
             res.statusCode = 200;
