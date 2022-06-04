@@ -5,6 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
+require('dotenv/config');
 
 var indexRouter = require('./routes/index');
 var teacherRouter = require('./routes/teacher');
@@ -15,7 +16,8 @@ var resultRouter = require('./routes/result');
 
 //DATABASE CONNECTION START
 const mongoose = require('mongoose');
-const url = 'mongodb://localhost:27017/thementor';
+const url = process.env.MONGO_URL;
+console.log(process.env.MONGO_URL);
 const connect = mongoose.connect(url);
 
 connect.then((db) => {

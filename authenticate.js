@@ -8,7 +8,7 @@ var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
 
-var config = require('./config');
+require('dotenv/config');
 
 exports.local = passport.use('teacherLocal',  new LocalStrategy(Teacher.authenticate()));
 exports.local = passport.use('studentLocal',  new LocalStrategy(Student.authenticate()));
@@ -16,12 +16,12 @@ passport.serializeUser(Teacher.serializeUser());
 passport.deserializeUser(Teacher.deserializeUser());
 
 exports.getToken = function(teacher) {
-    return jwt.sign(teacher, config.secretKey, {expiresIn: 2678400});
+    return jwt.sign(teacher, process.env.SECRET_KEY, {expiresIn: 2678400});
 };
 
 var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = config.secretKey;
+opts.secretOrKey = process.env.SECRET_KEY;
 
 exports.jwtPassport = passport.use('teacherJWT', new JwtStrategy(opts, (jwt_payload, done) => {
     console.log("JWT Payload: ", jwt_payload);

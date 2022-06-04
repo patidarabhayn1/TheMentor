@@ -74,6 +74,7 @@ router.route('/:studentId/result')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyTeacher,  (req, res, next) => {
     Result.find({enroll: req.params.studentId})
+    .populate('subjects.course')
     .then((result) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');
@@ -89,6 +90,7 @@ router.route('/:studentId/result/:resultId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyTeacher,  (req, res, next) => {
   Result.find({enroll: req.params.studentId,  _id: req.params.resultId})
+  .populate('subjects.course')
   .then((result) => {
       res.statusCode = 200;
       res.setHeader('Content-Type','application/json');
@@ -101,8 +103,8 @@ router.route('/:studentId/result/:resultId')
 
 router.route('/:studentId/result/:resultId/subjects')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
-    Result.find({enroll: req.studentId, _id: req.params.resultId})
+.get(cors.corsWithOptions, authenticate.verifyTeacher,  (req, res, next) => {
+    Result.find({enroll: req.params.studentId, _id: req.params.resultId})
     .populate('subjects.course')
     .then((result) => {
         if(result.length > 0) {
@@ -123,8 +125,9 @@ router.route('/:studentId/result/:resultId/subjects')
 
 router.route('/:studentId/result/:resultId/subjects/:subjectId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyStudent,  (req, res, next) => {
-    Result.find({enroll: req.studentId, _id: req.params.resultId})
+.get(cors.corsWithOptions, authenticate.verifyTeacher,  (req, res, next) => {
+  console.log("Hello");
+    Result.find({enroll: req.params.studentId, _id: req.params.resultId})
     .populate('subjects.course')
     .then((result) => {
         if(result.length > 0) {
